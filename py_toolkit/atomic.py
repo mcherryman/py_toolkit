@@ -3,6 +3,8 @@
 """
 Provide a simple implementation of an AtomicInt, supporting all operations of int but in a thread safe manner
 
+https://docs.python.org/2.0/ref/numeric-types.html
+
 This has limited usage due to dynamic typing, i.e;
     a = AtomicInt()
     a + 5
@@ -39,12 +41,11 @@ import threading
 class AtomicInt(object):
     def __init__(self, value=0):
         self._value = value
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
 
-    @staticmethod
-    def _check_and_return_other_value(b):
+    def _check_and_return_other_value(self, b):
         if isinstance(b, AtomicInt):
-            return b.value
+            return self.value if self is b else b.value
         elif isinstance(b, (int, long)):
             return b
         else:
@@ -72,7 +73,7 @@ class AtomicInt(object):
 
     def __add__(self, b):
         with self._lock:
-            return self._value + self._check_and_return_other_value(b)
+            return AtomicInt(self._value + self._check_and_return_other_value(b))
 
     def __iadd__(self, b):
         with self._lock:
@@ -81,7 +82,7 @@ class AtomicInt(object):
 
     def __sub__(self, b):
         with self._lock:
-            return self._value - self._check_and_return_other_value(b)
+            return AtomicInt(self._value - self._check_and_return_other_value(b))
 
     def __isub__(self, b):
         with self._lock:
@@ -90,7 +91,7 @@ class AtomicInt(object):
 
     def __mul__(self, b):
         with self._lock:
-            return self._value * self._check_and_return_other_value(b)
+            return AtomicInt(self._value * self._check_and_return_other_value(b))
 
     def __imul__(self, b):
         with self._lock:
@@ -99,7 +100,7 @@ class AtomicInt(object):
 
     def __div__(self, b):
         with self._lock:
-            return self._value / self._check_and_return_other_value(b)
+            return AtomicInt(self._value / self._check_and_return_other_value(b))
 
     def __idiv__(self, b):
         with self._lock:
@@ -132,16 +133,20 @@ class AtomicInt(object):
 
     def __floordiv__(self, b):
         with self._lock:
-            return self._value // self._check_and_return_other_value(b)
+            return AtomicInt(self._value // self._check_and_return_other_value(b))
 
     def __ifloordiv__(self, b):
         with self._lock:
             self._value //= self._check_and_return_other_value(b)
             return self
 
+    def __divmod__(self, b):
+        with self._lock:
+            return (self._value // self._check_and_return_other_value(b)), (self._value % self._check_and_return_other_value(b))
+
     def __mod__(self, b):
         with self._lock:
-            return self._value % self._check_and_return_other_value(b)
+            return AtomicInt(self._value % self._check_and_return_other_value(b))
 
     def __imod__(self, b):
         with self._lock:
@@ -150,7 +155,7 @@ class AtomicInt(object):
 
     def __pow__(self, b, modulo = None):
         with self._lock:
-            return pow(self._value, self._check_and_return_other_value(b), modulo)
+            return AtomicInt(pow(self._value, self._check_and_return_other_value(b), modulo))
 
     def __ipow__(self, b, modulo=None):
         with self._lock:
@@ -159,7 +164,7 @@ class AtomicInt(object):
 
     def __lshift__(self, b):
         with self._lock:
-            return self._value << self._check_and_return_other_value(b)
+            return AtomicInt(self._value << self._check_and_return_other_value(b))
 
     def __ilshift__(self, b):
         with self._lock:
@@ -168,7 +173,7 @@ class AtomicInt(object):
 
     def __rshift__(self, b):
         with self._lock:
-            return self._value >> self._check_and_return_other_value(b)
+            return AtomicInt(self._value >> self._check_and_return_other_value(b))
 
     def __irshift__(self, b):
         with self._lock:
@@ -204,19 +209,19 @@ class AtomicInt(object):
 
     def __neg__(self):
         with self._lock:
-            return -self._value
+            return AtomicInt(-self._value)
 
     def __pos__(self):
         with self._lock:
-            return +self._value
+            return (+self._value)
 
     def __abs__(self):
         with self._lock:
-            return abs(self._value)
+            return AtomicInt(abs(self._value))
 
     def __invert__(self):
         with self._lock:
-            return ~self._value
+            return AtomicInt(~self._value)
 
     def __complex__(self):
         with self._lock:
