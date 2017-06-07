@@ -69,10 +69,8 @@ class AtomicIntTest(unittest.TestCase):
         c = a + b
         self.assertIsInstance(c, atomic.AtomicInt)
         self.assertEquals(c, 10)
-        with self.assertRaises(TypeError):
-            _ = 5 + c
-        with self.assertRaises(TypeError):
-            _ = 5l + c
+        self.assertEquals(5 + c, 15)
+        self.assertEquals(5l + c, 15)
 
     def test_08_subtracting_an_integer_should_calculate_correctly(self):
         """ Subtracting an integer value should perform subtraction """
@@ -85,10 +83,8 @@ class AtomicIntTest(unittest.TestCase):
         c = b - 3l
         self.assertIsInstance(c, atomic.AtomicInt)
         self.assertEquals(c, 4)
-        with self.assertRaises(TypeError):
-            _ = 5 - c
-        with self.assertRaises(TypeError):
-            _ = 5l - c
+        self.assertEquals(5 - c, 1)
+        self.assertEquals(5l - c, 1)
 
     def test_09_subtracting_two_atomic_ints_should_calculate_correctly(self):
         """ Subtracting an integer value should perform subtraction """
@@ -109,10 +105,8 @@ class AtomicIntTest(unittest.TestCase):
         c = b * 3l
         self.assertIsInstance(c, atomic.AtomicInt)
         self.assertEquals(c, 21)
-        with self.assertRaises(TypeError):
-            _ = 5 * c
-        with self.assertRaises(TypeError):
-            _ = 5l * c
+        self.assertEquals(5 * c, 105)
+        self.assertEquals(5l * c, 105)
 
     def test_11_multiplying_two_atomic_ints_should_calculate_correctly(self):
         """ Multiplying an integer value should perform multiplication """
@@ -133,10 +127,8 @@ class AtomicIntTest(unittest.TestCase):
         c = b / 3l
         self.assertIsInstance(c, atomic.AtomicInt)
         self.assertEquals(c, 2)
-        with self.assertRaises(TypeError):
-            _ = 3/c
-        with self.assertRaises(TypeError):
-            _ = 3l/c
+        self.assertEquals(6 / c, 3)
+        self.assertEquals(6l / c, 3)
 
     def test_13_dividing_two_atomic_ints_should_calculate_correctly(self):
         """ Dividing an integer value should perform integer division """
@@ -149,9 +141,8 @@ class AtomicIntTest(unittest.TestCase):
     def test_14_modulo_can_be_performed_with_an_atomic_int(self):
         """ Modulo should perform correctly with an AtomicInt """
         a = atomic.AtomicInt(5)
-        self.assertEquals(a%4, 1)
-        with self.assertRaises(TypeError):
-            self.assertEquals(6 % a, 1)
+        self.assertEquals(a % 4, 1)
+        self.assertEquals(6 % a, 1)
 
     def test_15_abs_should_work_with_an_atomic_int(self):
         """ Abs should work with an atomic int """
@@ -211,21 +202,18 @@ class AtomicIntTest(unittest.TestCase):
         b = atomic.AtomicInt(1)
         self.assertEquals(a & b, 0)
         self.assertEquals(a & 0, 0)
-        with self.assertRaises(TypeError):
-            self.assertEquals(0 & a, 0)
+        self.assertEquals(0 & a, 0)
         self.assertEquals(a & a, a)
 
         self.assertEquals(a | b, 3)
         self.assertEquals(a | 1, 3)
-        with self.assertRaises(TypeError):
-            self.assertEquals(1 | a, 3)
+        self.assertEquals(1 | a, 3)
         self.assertEquals(a | a, a)
 
         c = atomic.AtomicInt(3)
         self.assertEquals(a ^ c, 1)
         self.assertEquals(c ^ 2, 1)
-        with self.assertRaises(TypeError):
-            self.assertEquals(2 ^ c, 1)
+        self.assertEquals(2 ^ c, 1)
         self.assertEquals(c ^ c, 0)
 
         self.assertEquals(~a, -3)
@@ -250,8 +238,7 @@ class AtomicIntTest(unittest.TestCase):
         self.assertEquals(divmod(a, a), (1, 0))
         self.assertEquals(divmod(a, b), (2, 0))
         self.assertEquals(divmod(a, 5), (2, 0))
-        with self.assertRaises(TypeError):
-            self.assertEquals(divmod(10, b), ())
+        self.assertEquals(divmod(10, b), (2, 0))
 
     def test_22_atomic_int_should_raise_when_operated_on_with_non_integer_type(self):
         """ AtomicInt should raise when operated on with non integer type """

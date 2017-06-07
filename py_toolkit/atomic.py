@@ -5,19 +5,18 @@ Provide a simple implementation of an AtomicInt, supporting all operations of in
 
 https://docs.python.org/2.0/ref/numeric-types.html
 
-This has limited usage due to dynamic typing, i.e;
     a = AtomicInt()
     a + 5
     5
 
     b = 5
     b + a
-    TypeError: unsupported operand type(s) for +: 'int' and 'AtomicInt'
+    10
 
     b + a.value
     10
 
-Assignment is also undetectable so;
+Assignment is undetectable so;
  a = AtomicInt()
  type(a)
  <class 'AtomicInt'>
@@ -75,6 +74,10 @@ class AtomicInt(object):
         with self._lock:
             return AtomicInt(self._value + self._check_and_return_other_value(b))
 
+    def __radd__(self, b):
+        with self._lock:
+            return AtomicInt(self._check_and_return_other_value(b) + self._value)
+
     def __iadd__(self, b):
         with self._lock:
             self._value += self._check_and_return_other_value(b)
@@ -83,6 +86,12 @@ class AtomicInt(object):
     def __sub__(self, b):
         with self._lock:
             return AtomicInt(self._value - self._check_and_return_other_value(b))
+
+
+    def __rsub__(self, b):
+        with self._lock:
+            return AtomicInt(self._check_and_return_other_value(b) - self._value)
+
 
     def __isub__(self, b):
         with self._lock:
@@ -93,6 +102,10 @@ class AtomicInt(object):
         with self._lock:
             return AtomicInt(self._value * self._check_and_return_other_value(b))
 
+    def __rmul__(self, b):
+        with self._lock:
+            return AtomicInt(self._check_and_return_other_value(b) * self._value )
+
     def __imul__(self, b):
         with self._lock:
             self._value *= self._check_and_return_other_value(b)
@@ -101,6 +114,10 @@ class AtomicInt(object):
     def __div__(self, b):
         with self._lock:
             return AtomicInt(self._value / self._check_and_return_other_value(b))
+
+    def __rdiv__(self, b):
+        with self._lock:
+            return AtomicInt(self._check_and_return_other_value(b) / self._value)
 
     def __idiv__(self, b):
         with self._lock:
@@ -144,9 +161,17 @@ class AtomicInt(object):
         with self._lock:
             return (self._value // self._check_and_return_other_value(b)), (self._value % self._check_and_return_other_value(b))
 
+    def __rdivmod__(self, b):
+        with self._lock:
+            return (self._check_and_return_other_value(b) // self._value ), (self._check_and_return_other_value(b) % self._value)
+
     def __mod__(self, b):
         with self._lock:
             return AtomicInt(self._value % self._check_and_return_other_value(b))
+
+    def __rmod__(self, b):
+        with self._lock:
+            return AtomicInt(self._check_and_return_other_value(b) % self._value)
 
     def __imod__(self, b):
         with self._lock:
@@ -184,6 +209,10 @@ class AtomicInt(object):
         with self._lock:
             return self._value & self._check_and_return_other_value(b)
 
+    def __rand__(self, b):
+        with self._lock:
+            return self._check_and_return_other_value(b) & self._value
+
     def __iand__(self, b):
         with self._lock:
             self._value = int(self._value & self._check_and_return_other_value(b))
@@ -193,6 +222,10 @@ class AtomicInt(object):
         with self._lock:
             return self._value ^ self._check_and_return_other_value(b)
 
+    def __rxor__(self, b):
+        with self._lock:
+            return self._check_and_return_other_value(b) ^ self._value
+
     def __ixor__(self, b):
         with self._lock:
             self._value = int(self._value ^ self._check_and_return_other_value(b))
@@ -201,6 +234,10 @@ class AtomicInt(object):
     def __or__(self, b):
         with self._lock:
             return self._value | self._check_and_return_other_value(b)
+
+    def __ror__(self, b):
+        with self._lock:
+            return  self._check_and_return_other_value(b) | self._value
 
     def __ior__(self, b):
         with self._lock:
