@@ -250,7 +250,7 @@ class AtomicInt(object):
 
     def __pos__(self):
         with self._lock:
-            return (+self._value)
+            return AtomicInt(+self._value)
 
     def __abs__(self):
         with self._lock:
